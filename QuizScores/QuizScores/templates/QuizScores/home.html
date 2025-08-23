@@ -1,0 +1,31 @@
+<!--QuizScores/templates/QuizScores/home.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🌟 Project Store</title>
+  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'QuizScores/style.css' %}">
+
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌟 Project Store</h1>
+      <p class="tagline">Explore colorful mini-projects made with ❤</p>
+    </header>
+
+    <div class="projects">
+      
+      <a href="{% url 'upload_and_analyze' %}" class="project-card">
+        <div class="emoji">📚</div>
+        <div class="title">Quiz Analyzer</div>
+        <div class="author"></div>
+      </a>
+      
+    </div>
+  </div>
+</body>
+</html>

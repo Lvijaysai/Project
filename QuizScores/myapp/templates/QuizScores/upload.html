@@ -1,0 +1,241 @@
+<!--myapp/templates/QuizScores/uplode.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quiz Score Analyzer</title>
+   
+     <style>
+        /* Reset and base */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e272e, #130f40);
+            color: #f1f1f1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: #171c28;
+            width: 480px;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+        h2 {
+            text-align: center;
+            color: #00a8ff;
+            font-weight: 700;
+            margin-bottom: 32px;
+            letter-spacing: 1.5px;
+        }
+        form p {
+            display: flex;
+            gap: 15px;
+            margin: 0 0 20px;
+        }
+        input[type="file"] {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            background: #2f3640;
+            color: #f1f1f1;
+            font-weight: 600;
+            transition: background-color 0.25s ease;
+        }
+        input[type="file"]::file-selector-button {
+            cursor: pointer;
+            background-color: #00a8ff;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #0097e6;
+        }
+        button {
+            padding: 10px 22px;
+            background-color: #00a8ff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,168,255,0.5);
+        }
+        button:hover,
+        button:focus {
+            background-color: #0097e6;
+            box-shadow: 0 6px 20px rgba(0,151,230,0.7);
+        }
+        .error {
+            background-color: #ff4d6d;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 20px;
+            box-shadow: 0 3px 15px rgba(255,77,109,0.5);
+        }
+
+        .stats {
+            background-color: #222f3e;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+            box-shadow: 0 4px 20px rgba(0, 120, 255, 0.3);
+            color: #dcdde1;
+        }
+        .stats h3, .stats h4 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #00a8ff;
+        }
+        .stats p {
+            font-size: 1.05rem;
+            margin: 5px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        thead tr {
+            background-color: #00a8ff;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            user-select: none;
+        }
+        tbody tr {
+            background-color: #1e272e;
+            transition: background-color 0.25s ease;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #273c75;
+        }
+        tbody tr:hover {
+            background-color: #00a8ff;
+            color: #f5f6fa;
+        }
+        th, td {
+            padding: 14px 15px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        td.score {
+            text-align: right;
+            font-weight: 700;
+        }
+        td.grade {
+            text-align: center;
+            font-weight: 700;
+        }
+        /* Score and Name color coding */
+        .gold {
+            color: #fbc531; /* bright golden yellow */
+            font-weight: 700;
+            text-shadow: 0 0 3px #f9ca24;
+        }
+        .silver {
+            color: #7f8fa6; /* cool silver-gray */
+            font-weight: 700;
+            text-shadow: 0 0 2px #dcdde1;
+        }
+        .black {
+            color: #dcdde1; /* soft off-white for contrast on dark */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" role="main" aria-label="Quiz Score Analyzer">
+        <h2>Quiz Score Analyzer</h2>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <p>
+               <input type="file" name="csv_file" accept=".csv" aria-required="true" aria-describedby="fileHelp" />
+                <button type="submit" aria-label="Upload and Analyze">Upload &amp; Analyze</button>
+            </p>
+        </form>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if stats %}
+           <section class="stats" aria-label="Quiz Statistics Summary">
+                <h3>Quiz Statistics</h3>
+                <p>Average Score: <strong>{{ stats.avg }}</strong></p>
+                <p>Median Score: <strong>{{ stats.med }}</strong></p>
+                <p>Highest Score: <strong>{{ stats.highest }}</strong></p>
+                <p>Lowest Score: <strong>{{ stats.lowest }}</strong></p>
+                <h4>Grade Distribution:</h4>
+                <ul>
+                    {% for grade, count in stats.grade_dist.items %}
+                        <li>{{ grade }}: {{ count }}</li>
+                    {% endfor %}
+                </ul>
+        {% endif %}
+        {% if students %}
+         <section class="stats" aria-label="Student Scores and Grades">
+                <h3>Student Scores and Grades</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="score">Score</th>
+                            <th class="grade">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}   
+                        <tr>
+                            <td
+                                class="{% if student.score > 90 %}gold{% elif student.score >= 80 %}silver{% else %}black{% endif %}">
+                                {{ student.name }}
+                            </td>
+                            <td class="score {% if student.score > 90 %}gold{% elif student.score >= 80 %}silver{% else %}black{% endif %}">
+                                {{ student.score }}
+                            </td>
+                            <td class="grade">{{ student.grade }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
